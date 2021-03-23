@@ -1,10 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
-
+var jwt = require('jsonwebtoken');
 
 router.post('/api/register', function (req, res, next) {
-    console.log('req', req.body);
     var user = new User({
         username: req.body.username,
         email: req.body.email,
@@ -22,6 +21,28 @@ router.post('/api/register', function (req, res, next) {
         return res.status(501).json({
             message: 'Error registering user.'
         });
+    })
+});
+
+router.post('/api/login', function (req, res, next) {
+    let promise = User.findOne({ email: req.body.email }).exec();
+
+    promise.then(function (doc) {
+        if (doc) {
+            if (doc.isValid(req.body.password)) {
+                // generate token
+                let token = jwt.sign({ username: doc.username }, 'this_is_secret_key', { expiresIn: '3h' });
+                return res.status(200).json(token);
+            } else {
+                return res.status(501).json({ message: "Invalid credentials" });
+            }
+        } else {
+            return res.status(501).json({ message: "User email is not registered" });
+        }
+    });
+
+    promise.catch(function (err) {
+        return res.status(501).json({ message: "Some Internal error" });
     })
 });
 
