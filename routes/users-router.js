@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
+var SocialUser = require('../models/user');
 var jwt = require('jsonwebtoken');
 
 router.post('/api/register', function (req, res, next) {
@@ -23,6 +24,29 @@ router.post('/api/register', function (req, res, next) {
         });
     })
 });
+
+router.post('/api/socialUser', function (req, res, next) {
+    var socailuser = new SocialUser({
+        provider: req.body.provider,
+        email: req.body.email,
+        name: req.body.name,
+        image: req.body.image,
+        idToken: req.body.idToken,
+        creation_dt: Date.now()
+    });
+
+    let promise = socailuser.save();
+
+    promise.then(function (doc) {
+        return res.status(201).json(doc);
+    });
+
+    promise.catch(function (err) {
+        return res.status(501).json({
+            message: `Error submitting ${socailuser.provider} data`
+        });
+    })
+})
 
 router.post('/api/login', function (req, res, next) {
     let promise = User.findOne({ email: req.body.email }).exec();

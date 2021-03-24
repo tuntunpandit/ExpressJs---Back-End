@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var userRegSchema = mongoose.Schema;
+var socialUserSchema = mongoose.Schema;
 var bcrypt = require('bcrypt');
 
 var schema = new userRegSchema({
@@ -7,6 +8,15 @@ var schema = new userRegSchema({
     username: { type: String, require: true },
     password: { type: String, require: true },
     creation_dt: { type: String, require: true },
+});
+
+var socialSchema = new socialUserSchema({
+    provider: { type: String },
+    email: { type: String },
+    name: { type: String },
+    image: { type: String },
+    idToken: { type: String },
+    creation_dt: { type: String },
 });
 
 schema.statics.hashPassword = function hashPassword(password) {
@@ -18,3 +28,4 @@ schema.methods.isValid = function (hashedPassword) {
 }
 
 module.exports = mongoose.model('User', schema);
+module.exports = mongoose.model('SocialUser', socialSchema);
