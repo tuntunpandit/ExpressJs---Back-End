@@ -26,6 +26,7 @@ router.post('/api/register', function (req, res, next) {
 });
 
 router.post('/api/socialUser', function (req, res, next) {
+    console.log('req', req.body);
     var socailuser = new SocialUser({
         provider: req.body.provider,
         email: req.body.email,

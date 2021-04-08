@@ -4,6 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const mainRouter = require('./routes/main-router');
 const userRouter = require('./routes/users-router');
+const bookRouter = require('./routes/book-router');
 const bodyParser = require('body-parser');
 
 // add mongoose
@@ -28,6 +29,7 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(mainRouter);
 app.use(userRouter);
+app.use(bookRouter);
 
 app.listen(3000, () => {
     console.log(`Express is running on port ${PORT}`);
