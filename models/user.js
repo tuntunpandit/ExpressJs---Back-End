@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
-const userRegSchema = mongoose.Schema;
+const Schema = mongoose.Schema;
 // let socialUserSchema = mongoose.Schema;
 var bcrypt = require('bcrypt');
 
-const userSchema = new userRegSchema({
+const userSchema = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },

@@ -43,6 +43,8 @@ db.once('open', () => {
 // app.use(express.static('public'));
 
 
+// retrive json data
+app.use(express.json());
 // ---------- All Routers gateway----------------------------
 app.use('/api', routes);
 

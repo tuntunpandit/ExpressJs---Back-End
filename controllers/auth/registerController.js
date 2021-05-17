@@ -1,11 +1,12 @@
 import Joi from "joi";
-import CustomErrorHandler from '../services/CustomErrorHandler';
-import JwtService from '../services/JwtService';
-import { User } from '../models';
+import CustomErrorHandler from '../../services/CustomErrorHandler';
+import JwtService from '../../services/JwtService';
+import { User } from '../../models';
+import bcrypt from 'bcrypt';
 
 const registerController = {
     async register(req, res, next) {        
-
+        console.log(req.body);
         // validate fields
         const registerSchema = Joi.object({
             name: Joi.string().min(3).max(30).required(),
@@ -15,7 +16,8 @@ const registerController = {
         });
 
         const { fieldValidationError } = registerSchema.validate(req.body);
-
+        
+        console.log("fieldValidationError", fieldValidationError);
         if (fieldValidationError) {
             return next(fieldValidationError);
         }
@@ -23,7 +25,7 @@ const registerController = {
         // validate email already exist or not
 
         try {
-            const exist = await User.exist({ email: req.body.email });
+            const exist = await User.exists({ email: req.body.email });
             if(exist) {
                 return next(CustomErrorHandler.emailAlreadyExist("This email is already taken."));
             }
@@ -32,23 +34,21 @@ const registerController = {
             return next(err);
         }      
 
+        const { name, email, password } = req.body;
         // Hash password
-
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         // Prepare model 
-        const { name, email, password } = req.body;
-        const user = {
-            name: name,
-            email: email,
+        const user = new User({
+            name,
+            email,
             password: hashedPassword
-        }
+        });
 
         let access_token;
 
         try {
-            const result = await User.save();
-            console.log(result);
+            const result = await user.save();
             //token 
             access_token = JwtService.sign({_id: result._id, role: result.role});
         }
