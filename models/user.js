@@ -1,31 +1,34 @@
-var mongoose = require('mongoose');
-var userRegSchema = mongoose.Schema;
-var socialUserSchema = mongoose.Schema;
+import mongoose from 'mongoose';
+const userRegSchema = mongoose.Schema;
+// let socialUserSchema = mongoose.Schema;
 var bcrypt = require('bcrypt');
 
-var schema = new userRegSchema({
-    email: { type: String, require: true },
-    username: { type: String, require: true },
-    password: { type: String, require: true },
-    creation_dt: { type: String, require: true },
-});
+const userSchema = new userRegSchema({
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+    role: { type: String, default: 'customer'},
+    // createdAt: { type: String, required: true }, 
+}, {timestamps: true});
 
-var socialSchema = new socialUserSchema({
-    provider: { type: String },
-    email: { type: String },
-    name: { type: String },
-    image: { type: String },
-    idToken: { type: String },
-    creation_dt: { type: String },
-});
+// var socialSchema = new socialUserSchema({
+//     provider: { type: String },
+//     email: { type: String },
+//     name: { type: String },
+//     image: { type: String },
+//     idToken: { type: String },
+//     creation_dt: { type: String },
+// });
 
-schema.statics.hashPassword = function hashPassword(password) {
-    return bcrypt.hashSync(password, 10);
-}
+// userSchema.statics.hashPassword = function hashPassword(password) {
+//     return bcrypt.hashSync(password, 10);
+// }
 
-schema.methods.isValid = function (hashedPassword) {
-    return bcrypt.compareSync(hashedPassword, this.password);
-}
+// userSchema.methods.isValid = function (hashedPassword) {
+//     return bcrypt.compareSync(hashedPassword, this.password);
+// }
 
-module.exports = mongoose.model('User', schema);
-module.exports = mongoose.model('SocialUser', socialSchema);
+// module.exports = mongoose.model('User', userSchema);
+// module.exports = mongoose.model('SocialUser', socialSchema);
+
+export default mongoose.model('User', userSchema, 'users');

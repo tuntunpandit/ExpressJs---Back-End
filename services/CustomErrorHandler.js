@@ -4,7 +4,7 @@ class CustomErrorHandler extends Error {
         this.message = msg;
     }
 
-    static alreadyExist(mmessage) {
+    static emailAlreadyExist(message) {
         return new CustomErrorHandler(409, message);
     }
 }
