@@ -59,7 +59,7 @@ const loginController = {
         }
 
         try {
-            await RefreshToken.deleteOne({ token: req.body.refesh_token });
+            await RefreshToken.deleteOne({ token: req.body.refresh_token });
         } catch (err) {
             return next(new Error("Something went wrong in database"));
         }
