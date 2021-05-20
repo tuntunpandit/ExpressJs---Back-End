@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import { REFRESH_SECRET } from '../../config';
 
 const registerController = {
-    async register(req, res, next) {        
+    async register(req, res, next) {
         console.log(req.body);
         // validate fields
         const registerSchema = Joi.object({
@@ -17,7 +17,7 @@ const registerController = {
         });
 
         const { fieldValidationError } = registerSchema.validate(req.body);
-        
+
         console.log("fieldValidationError", fieldValidationError);
         if (fieldValidationError) {
             return next(fieldValidationError);
@@ -27,19 +27,19 @@ const registerController = {
 
         try {
             const exist = await User.exists({ email: req.body.email });
-            if(exist) {
+            if (exist) {
                 return next(CustomErrorHandler.emailAlreadyExist("This email is already taken."));
             }
-        } 
+        }
         catch (err) {
             return next(err);
-        }      
+        }
 
         const { name, email, password } = req.body;
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Prepare model 
+        // Prepare model
         const user = new User({
             name,
             email,
@@ -51,21 +51,21 @@ const registerController = {
 
         try {
             const result = await user.save();
-            //token 
-            access_token = JwtService.sign({_id: result._id, role: result.role});
-            refresh_token = JwtService.sign({_id: result._id, role: result.role}, '1y', REFRESH_SECRET);
+            //token
+            access_token = JwtService.sign({ _id: result._id, role: result.role });
+            refresh_token = JwtService.sign({ _id: result._id, role: result.role }, '1y', REFRESH_SECRET);
 
-            // database whitelist 
-            await RefreshToken.create({token: refresh_token});
+            // database whitelist token
+            await RefreshToken.create({ token: refresh_token });
         }
-        catch(err) {
+        catch (err) {
             return next(err);
         }
 
         res.json({ access_token, refresh_token });
     }
 
-    
+
 }
 
 export default registerController;

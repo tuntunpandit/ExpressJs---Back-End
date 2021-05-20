@@ -1,8 +1,9 @@
 import Joi from 'joi';
 import CustomErrorHandler from "../../services/CustomErrorHandler";
-import { User } from "../../models";
+import { User, RefreshToken } from "../../models";
 import bcrypt from "bcrypt";
 import JwtService from "../../services/JwtService";
+import { REFRESH_SECRET } from "../../config";
 
 const loginController = {
     async login(req, res, next) {
@@ -15,32 +16,55 @@ const loginController = {
 
         const { validationError } = loginSchema.validate(req.body);
 
-        if(validationError) {
+        if (validationError) {
             req.next(validationError);
         }
 
         // check user exist or not
         try {
-            const user = await User.findOne({email: req.body.email});
-            if(!user) {
+            const user = await User.findOne({ email: req.body.email });
+            if (!user) {
                 return next(CustomErrorHandler.wrongCredentials());
             }
             // compare the password
             const matchPass = await bcrypt.compare(req.body.password, user.password);
-            if(!matchPass) {
+            if (!matchPass) {
                 return next(CustomErrorHandler.wrongCredentials());
             }
 
-            // Token 
-            const access_token = JwtService.sign({_id: user._id, role: user.role});
+            // Token
+            const access_token = JwtService.sign({ _id: user._id, role: user.role });
+            const refresh_token = JwtService.sign({ _id: user._id, role: user.role }, '1y', REFRESH_SECRET);
 
-            res.json({access_token});
-
+            await RefreshToken.create({ token: refresh_token });
+            res.json({ access_token, refesh_token });
 
         }
-        catch(err) {
+        catch (err) {
             return next(err);
         }
+    },
+
+    async logout(req, res, next) {
+        // validate
+
+        const refreshTokenSchema = Joi.object({
+            refresh_token: Joi.string().required()
+        });
+
+        const { error } = refreshTokenSchema.validate(req.body);
+
+        if (error) {
+            return next(error);
+        }
+
+        try {
+            await RefreshToken.deleteOne({ token: req.body.refesh_token });
+        } catch (err) {
+            return next(new Error("Something went wrong in database"));
+        }
+
+        res.json({ status: 1 });
     }
 };
 
