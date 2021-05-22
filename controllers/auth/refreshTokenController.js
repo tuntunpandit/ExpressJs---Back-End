@@ -14,7 +14,7 @@ const refreshTokenController = {
         });
 
         const { error } = refreshTokenSchema.validate(req.body);
-
+        console.log('refresh validation', error);
         if (error) {
             return next(error);
         }
@@ -23,6 +23,7 @@ const refreshTokenController = {
         let refreshtoken;
         try {
             refreshtoken = await RefreshToken.findOne({ token: req.body.refresh_token });
+            console.log('refreshtoken', refreshtoken);
             if (!refershtoken) {
                 return next(CustomErrorHandler.unAuthorized("Invalid refresh token"));
             }

@@ -9,6 +9,7 @@ const loginController = {
     async login(req, res, next) {
 
         // Validate fields
+        console.log("login", req.body);
         const loginSchema = Joi.object({
             email: Joi.string().email().required(),
             password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
@@ -19,10 +20,10 @@ const loginController = {
         if (validationError) {
             req.next(validationError);
         }
-
         // check user exist or not
         try {
             const user = await User.findOne({ email: req.body.email });
+
             if (!user) {
                 return next(CustomErrorHandler.wrongCredentials());
             }
@@ -33,11 +34,11 @@ const loginController = {
             }
 
             // Token
-            const access_token = JwtService.sign({ _id: user._id, role: user.role });
+            const jwt_token = JwtService.sign({ _id: user._id, role: user.role });
             const refresh_token = JwtService.sign({ _id: user._id, role: user.role }, '1y', REFRESH_SECRET);
 
             await RefreshToken.create({ token: refresh_token });
-            res.json({ access_token, refesh_token });
+            res.json({ jwt_token, refesh_token });
 
         }
         catch (err) {

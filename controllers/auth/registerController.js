@@ -7,7 +7,7 @@ import { REFRESH_SECRET } from '../../config';
 
 const registerController = {
     async register(req, res, next) {
-        // console.log(req.body);
+        console.log(req.body);
         // validate fields
         const registerSchema = Joi.object({
             name: Joi.string().min(3).max(30).required(),
@@ -46,13 +46,13 @@ const registerController = {
             password: hashedPassword
         });
 
-        let access_token;
+        let jwt_token;
         let refresh_token;
 
         try {
             const result = await user.save();
             //token
-            access_token = JwtService.sign({ _id: result._id, role: result.role });
+            jwt_token = JwtService.sign({ _id: result._id, role: result.role });
             refresh_token = JwtService.sign({ _id: result._id, role: result.role }, '1y', REFRESH_SECRET);
 
             // database whitelist token
@@ -62,7 +62,7 @@ const registerController = {
             return next(err);
         }
 
-        res.json({ access_token, refresh_token });
+        res.json({ jwt_token, refresh_token });
     }
 
 

@@ -3,6 +3,7 @@ import routes from './routes';
 import { APP_PORT, DB_URL } from './config';
 import errorHandler from './middlewares/errorHandler';
 import mongoose from 'mongoose';
+import cors from 'cors';
 const app = express();
 
 // const path = require('path');
@@ -27,9 +28,9 @@ db.once('open', () => {
 
 // add cors
 // const cors = require('cors');
-// app.use(cors({
-//     origin: 'http://localhost:4200'
-// }));
+app.use(cors(
+    // {origin: 'http://localhost:4200'}
+));
 
 // parse application/x-www-form-urlencoded
 // app.use(bodyParser.urlencoded({ extended: false }));
@@ -51,7 +52,7 @@ app.use('/api', routes);
 // --------- Error Handler Middleware------------
 app.use(errorHandler);
 
-//listening express app 
+//listening express app
 app.listen(APP_PORT, () => {
     console.log(`Express is running on port ${APP_PORT}`);
 });
