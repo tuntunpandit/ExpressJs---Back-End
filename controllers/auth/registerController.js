@@ -7,7 +7,7 @@ import { REFRESH_SECRET } from '../../config';
 
 const registerController = {
     async register(req, res, next) {
-        console.log(req.body);
+        // console.log("register Field", req.body);
         // validate fields
         const registerSchema = Joi.object({
             name: Joi.string().min(3).max(30).required(),

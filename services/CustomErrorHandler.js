@@ -16,6 +16,10 @@ class CustomErrorHandler extends Error {
         // 401 - Authorization error
         return new CustomErrorHandler(401, message);
     }
+    static accessForbidden(message = 'Access Forbidden!') {
+        // 401 - Authorization error
+        return new CustomErrorHandler(403, message);
+    }
     static notFound(message = '404 Not Found!') {
         return new CustomErrorHandler(404, message);
     }
