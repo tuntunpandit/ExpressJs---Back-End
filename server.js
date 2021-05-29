@@ -4,10 +4,9 @@ import { APP_PORT, DB_URL } from './config';
 import errorHandler from './middlewares/errorHandler';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import path from 'path';
 const app = express();
 
-// const path = require('path');
-// const PORT = process.env.PORT || 3000;
 // const mainRouter = require('./routes/main-router');
 // const userRouter = require('./routes/users-router');
 // const bookRouter = require('./routes/book-router');
@@ -52,6 +51,12 @@ app.use('/api', routes);
 // --------- Error Handler Middleware------------
 app.use(errorHandler);
 
+
+// serve build data of angular
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/index.html'));
+})
 //listening express app
 app.listen(APP_PORT, () => {
     console.log(`Express is running on port ${APP_PORT}`);
