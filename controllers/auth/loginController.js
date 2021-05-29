@@ -9,7 +9,7 @@ const loginController = {
     async login(req, res, next) {
 
         // Validate fields
-        console.log("login", req.body);
+        // console.log("login", req.body);
         const loginSchema = Joi.object({
             email: Joi.string().email().required(),
             password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
@@ -38,7 +38,11 @@ const loginController = {
             const refresh_token = JwtService.sign({ _id: user._id, role: user.role }, '1y', REFRESH_SECRET);
 
             await RefreshToken.create({ token: refresh_token });
-            res.json({ jwt_token, refesh_token });
+
+            // console.log("jwt", jwt_token);
+            // console.log("refresh", refresh_token);
+            // console.log("user", user);
+            res.json({ jwt_token, refresh_token });
 
         }
         catch (err) {
@@ -48,7 +52,7 @@ const loginController = {
 
     async logout(req, res, next) {
         // validate
-
+        console.log("loout", req.body);
         const refreshTokenSchema = Joi.object({
             refresh_token: Joi.string().required()
         });
@@ -65,7 +69,7 @@ const loginController = {
             return next(new Error("Something went wrong in database"));
         }
 
-        res.json({ status: 1 });
+        res.json({ status: 204, message: "logged out successfully!" });
     }
 };
 
